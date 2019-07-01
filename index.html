@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" 
+          content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Mini App</title>
+
+    <style>
+      
+      .actions span {
+        transform: scale(1.5);
+      }
+    
+    </style>
+  </head>
+  <body>
+
+    <h1>Calculator</h1>
+
+    First Number: &nbsp; <input type="text" id="n1" maxlength="7"> <br> <br>
+    Second Number: &nbsp; <input type="text" id="n1" maxlength="7"> <br> <br>
+    <select  id="opr">
+      <option value="+">+</option>
+      <option value="-">-</option>
+      <option value="*">*</option>
+      <option value="/">/</option>
+      <option value="%">%</option>
+    </select> &nbsp; &nbsp; &nbsp; &nbsp;
+    <input type="button" value="m" onclick="calc();">
+    <br>
+    <br>
+    Answer: <input type="text" id="result"> <br> <br>
+    <script>
+      const startApp = () => {
+        
+      };
+      
+      startApp();
+    </script>
+  </body>
+</html>
