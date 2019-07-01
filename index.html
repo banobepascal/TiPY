@@ -25,7 +25,7 @@
     <select  id="opr">
       <option value="+">+</option>
       <option value="-">-</option>
-      <option value="*">*</option>
+      <option value="x">x</option>
       <option value="/">/</option>
       <option value="%">%</option>
     </select> &nbsp; &nbsp; &nbsp; &nbsp;
@@ -39,7 +39,23 @@
         var n1 = parseFloat(document.getElementById('n1').value);
         var n1 = parseFloat(document.getElementById('n1').value);
 
-        var op = document.getElementById('opr').value);
+        var op = document.getElementById('opr').value
+
+        if(op === "+"){
+          document.getElementById('result').value = n1+n2
+        }
+        if(op === "-"){
+          document.getElementById('result').value = n1-n2
+        }
+        if(op === "x"){
+          document.getElementById('result').value = n1xn2
+        }
+        if(op === "/"){
+          document.getElementById('result').value = n1/n2
+        }
+        if(op === "%"){
+          document.getElementById('result').value = n1%n2
+        }
       };
       
       startApp();
