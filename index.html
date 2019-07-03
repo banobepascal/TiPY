@@ -10,53 +10,180 @@
 
     <style>
       
+      body {
+        background: #fff;
+      }
+      
+      .mdc-typography--headline4 {
+        margin: 0.5em;
+      }
+      
+      .tip {
+        float: right;
+      }
+      
+      .menu {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .menu .item {
+        width: 40%;
+        padding: 0.4em;
+        margin: 0.4em;
+        border: solid white 1px;
+        display: inline-block;
+        cursor: pointer;
+      }
+      
+      .menu img {
+        display: block;
+        min-width: 131px;
+        min-height: 150px;
+        width: 100%;
+      }
+      
+      .menu p {
+        text-align: center;
+        min-height: 32px;
+      }
+      
+      .actions {
+        text-align: center;
+        margin-top: 1em;
+      }
+      
       .actions span {
         transform: scale(1.5);
+        cursor: pointer;
+      }
+      
+      .rated {
+        color: orange;
+      }
+      
+      div.item[data-selected] {
+        border-color: #333;
       }
     
     </style>
   </head>
   <body>
-
-    <h1>Calculator</h1>
-
-    First Number: &nbsp; <input type="text" id="n1" maxlength="7"> <br> <br>
-    Second Number: &nbsp; <input type="text" id="n1" maxlength="7"> <br> <br>
-    <select  id="opr">
-      <option value="+">+</option>
-      <option value="-">-</option>
-      <option value="x">x</option>
-      <option value="/">/</option>
-      <option value="%">%</option>
-    </select> &nbsp; &nbsp; &nbsp; &nbsp;
-    <input type="button" value="m" onclick="calc();">
-    <br>
-    <br>
-    Answer: <input type="text" id="result"> <br> <br>
+    
+  <h4 class="mdc-typography--headline4">TiPY  <span class="tip"></span></h4>
+    
+    <div class="menu">
+      <div class="item" onClick="order()">
+        <img src="https://via.placeholder.com/150" alt="">
+        <p class="mdc-typography--headline6"></p>
+      </div>
+      <div class="item" onClick="order()">
+        <img src="https://via.placeholder.com/150" alt="">
+        <p class="mdc-typography--headline6"></p>
+      </div>
+      <div class="item" onClick="order()">
+        <img src="https://via.placeholder.com/150" alt="">
+        <p class="mdc-typography--headline6"></p>
+      </div>
+      <div class="item" onClick="order()">
+        <img src="https://via.placeholder.com/150" alt="">
+        <p class="mdc-typography--headline6"></p>
+      </div>
+    </div>
+    
+    <div class="actions"> 
+      <span class="material-icons" data-rate="1">star</span>
+      <span class="material-icons" data-rate="2">star</span>
+      <span class="material-icons" data-rate="3">star</span>
+      <span class="material-icons" data-rate="4">star</span>
+      <span class="material-icons" data-rate="5">star</span>
+    </div>
+    
     <script>
-      const startApp = () => {
-
-        var n1 = parseFloat(document.getElementById('n1').value);
-        var n1 = parseFloat(document.getElementById('n1').value);
-
-        var op = document.getElementById('opr').value
-
-        if(op === "+"){
-          document.getElementById('result').value = n1+n2
-        }
-        if(op === "-"){
-          document.getElementById('result').value = n1-n2
-        }
-        if(op === "x"){
-          document.getElementById('result').value = n1xn2
-        }
-        if(op === "/"){
-          document.getElementById('result').value = n1/n2
-        }
-        if(op === "%"){
-          document.getElementById('result').value = n1%n2
-        }
+      
+      let menu = [];
+      
+      const getRating = (star) => {
+        return parseInt(star.getAttribute('data-rate'));
       };
+          
+      const formatMoney = (figure) => {
+        return figure;
+      };
+      
+      const calculateTip = () => {
+        
+      };
+      
+      const mealChoosen = ({target}) => {
+        const items = document.querySelectorAll('.item').forEach((item) => {
+          item.removeAttribute('data-selected');
+        });
+        target.parentNode.setAttribute('data-selected');
+        calculateTip();
+      };
+      
+      const rateMeal = ({ target }) => {
+        const rating = getRating(target);
+        for (i = 1; i <= 5; i++) {
+          const item = document.querySelector(`[data-rate='${i}']`);
+          item.classList.remove('rated');
+        }
+        for (i = 1; i <= rating; i++) {
+          const item = document.querySelector(`[data-rate='${i}']`);
+          item.classList.add('rated');
+        }
+        calculateTip();
+        
+      };
+      
+      const uiCanInteract = () => {
+        
+        const images = document.querySelectorAll('.menu .item img');
+        images.forEach((image) => {
+          image.addEventListener('click', mealChoosen);
+        });
+        
+        const actions = document.querySelectorAll('.actions span');
+        actions.forEach((action) => {
+          action.addEventListener('click', rateMeal);
+        });
+        
+      };
+      
+ 	  const displayMenu = ({results}) => {
+   
+        const [data] = results;
+   		menu = Object.values(data);
+        let count = 1;
+        menu.forEach((option) => {
+          document.querySelectorAll(`.menu:nth-child(${count}) img`).src = option.sample;
+          document.querySelectorAll(`.menu:nth-child(${count}) p`).textcontent = formatMoney(option.price);
+          document.querySelectorAll(`.menu .item`)[count-1].setAttribute('data-meal-id', option.id);
+          
+          count++;
+        });
+        
+        uiCanInteract();
+      
+ 	  };
+      
+      const fetchAndDisplayMenu = () => {
+        
+      const api = "https://randomapi.com/api/d12c99b82acfefae33f7ce9239b57811";
+        fetch(api)
+          .then((response) => response.json())
+          .then((data) =>  displayMenu(data));
+        
+      };
+      
+      
+     const startApp = () => {
+       
+       fetchAndDisplayMenu();
+     };
       
       startApp();
     </script>
