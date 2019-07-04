@@ -1,2 +1,2 @@
 # TiPY
-simple calculator created in basic javascript
+simple meal rating app created in basic javascript
