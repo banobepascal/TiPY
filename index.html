@@ -23,13 +23,10 @@
       }
       
       .menu {
-        margin-top: 1em;
-        margin-bottom: 1em;
-        margin-left: auto;
-        margin-right: auto;
+        margin: 1em auto;
       }
       
-      .menu .item {
+      .item {
         width: 40%;
         padding: 0.4em;
         margin: 0.4em;
@@ -64,7 +61,7 @@
         color: orange;
       }
       
-      div.item[data-selected] {
+      .item[data-selected] {
         border-color: #333;
       }
     
@@ -75,20 +72,20 @@
   <h4 class="mdc-typography--headline4">TiPY  <span class="tip"></span></h4>
     
     <div class="menu">
-      <div class="item" onClick="order()">
-        <img src="https://via.placeholder.com/150" alt="">
+      <div class="item">
+        <img src="https://via.placeholder.com/150" alt="menu">
         <p class="mdc-typography--headline6"></p>
       </div>
-      <div class="item" onClick="order()">
-        <img src="https://via.placeholder.com/150" alt="">
+      <div class="item">
+        <img src="https://via.placeholder.com/150" alt="menu">
         <p class="mdc-typography--headline6"></p>
       </div>
-      <div class="item" onClick="order()">
-        <img src="https://via.placeholder.com/150" alt="">
+      <div class="item">
+        <img src="https://via.placeholder.com/150" alt="menu">
         <p class="mdc-typography--headline6"></p>
       </div>
-      <div class="item" onClick="order()">
-        <img src="https://via.placeholder.com/150" alt="">
+      <div class="item">
+        <img src="https://via.placeholder.com/150" alt="menu">
         <p class="mdc-typography--headline6"></p>
       </div>
     </div>
@@ -103,85 +100,141 @@
     
     <script>
       
+      // making selection
+      const menuImages = document.querySelectorAll('.item > img');
+      const menuPrices = document.querySelectorAll('.item > p');
+      const listItems = document.querySelectorAll('div.item');
+      const stars = document.querySelectorAll('.actions > span');
+      const showTip = document.querySelector('span.tip');
+      
       let menu = [];
       
       const getRating = (star) => {
-        return parseInt(star.getAttribute('data-rate'));
-      };
-          
+        star = star.getAttribute("data-rate");
+        let starInt = parseInt(star);
+        return starInt;
+      }
+      
       const formatMoney = (figure) => {
-        return figure;
+        return figure.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
       };
       
+      const tipWith = (tip) => {
+        tip = formatMoney(tip);
+        return showTip.textContent = `${tip}`;
+      };
+      
+      
+      
       const calculateTip = () => {
+        let tip = 0;
         
+        const mealId = document.querySelector('.item[data-selected]').getAttribute("data-meal-id");
+        const meal = menu.find((food) => food.id === mealId);
+        
+        const rating = maximumRating();
+        if (rating >= 3){
+          tip = Math.round((rating / 50) * meal.price);
+        }
+        
+        return tipWith(tip);
+      };
+      
+      const maximumRating = () => {
+        let holder = [];
+        
+        const stars = document.querySelectorAll('span.rated')
+        let starsArr = Array.from(stars)
+        for (let index = 0; index < stars.length; index++) {
+          holder.push(starsArr[index].getAttribute("data-rate"))
+        }
+        return parseInt(Math.max(...holder));
       };
       
       const mealChoosen = ({target}) => {
-        const items = document.querySelectorAll('.item').forEach((item) => {
-          item.removeAttribute('data-selected');
-        });
-        target.parentNode.setAttribute('data-selected');
+        listItems.forEach((item, index) => {
+          item.removeAttribute("data-selected")
+          if (target) {
+            target.parentElement.setAttribute("data-selected", "")
+          }
+        })
+        
         calculateTip();
       };
       
-      const rateMeal = ({ target }) => {
+      const rateMeal = ({target}) => {
         const rating = getRating(target);
-        for (i = 1; i <= 5; i++) {
-          const item = document.querySelector(`[data-rate='${i}']`);
-          item.classList.remove('rated');
+        if (!selected()) {
+          return;
         }
-        for (i = 1; i <= rating; i++) {
-          const item = document.querySelector(`[data-rate='${i}']`);
-          item.classList.add('rated');
+        
+        if (selected()) {
+          stars.forEach((star, index) => {
+            starNumber = star.getAttribute("data-rate")
+            starNumberInt = parseInt(starNumber)
+            star.classList.remove('rated')
+            
+            if (starNumberInt <= rating) {
+              star.classList.add('rated')
+            }
+          });
         }
+        
         calculateTip();
         
       };
+      
+      const selected = () => {
+        let imageSelected = false;
+        listItems.forEach((item) => {
+          if (item.hasAttribute('data-selected')) imageSelected = true;
+        });
+        return imageSelected;
+      }
+      
+      const rated = () => {
+        let ratingSelected = false;
+        stars.forEach((star) => {
+          if (star.classList.contains(".rated")) ratingSelected = true;
+        });
+        return ratingSelected;
+      }
       
       const uiCanInteract = () => {
+        listItems.forEach((item) => item.addEventListener('click', mealChoosen))
         
-        const images = document.querySelectorAll('.menu .item img');
-        images.forEach((image) => {
-          image.addEventListener('click', mealChoosen);
-        });
-        
-        const actions = document.querySelectorAll('.actions span');
-        actions.forEach((action) => {
-          action.addEventListener('click', rateMeal);
-        });
+        stars.forEach((star) => star.addEventListener('click', rateMeal))
         
       };
       
- 	  const displayMenu = ({results}) => {
-   
+      const displayMenu = ({results}) => {
         const [data] = results;
-   		menu = Object.values(data);
-        let count = 1;
-        menu.forEach((option) => {
-          document.querySelectorAll(`.menu:nth-child(${count}) img`).src = option.sample;
-          document.querySelectorAll(`.menu:nth-child(${count}) p`).textcontent = formatMoney(option.price);
-          document.querySelectorAll(`.menu .item`)[count-1].setAttribute('data-meal-id', option.id);
+        menu = Object.values(data);
+        
+        menu.forEach((meal, index) => {
+          menuImages[index].src = `${meal.sample}`;
           
-          count++;
+          let formattedPrice = formatMoney(meal.price);
+          menuPrices[index].textContent = `${formattedPrice}`;
+          listItems[index].setAttribute("data-meal-id", meal.id)
         });
         
         uiCanInteract();
-      
- 	  };
+      };
       
       const fetchAndDisplayMenu = () => {
-        
-      const api = "https://randomapi.com/api/d12c99b82acfefae33f7ce9239b57811";
+        const api = 'https://randomapi.com/api/d12c99b82acfefae33f7ce9239b57811';
         fetch(api)
-          .then((response) => response.json())
-          .then((data) =>  displayMenu(data));
-        
+        	.then((response) => response.json())
+        	.then((data) => displayMenu(data))
+      
       };
       
       
+      
+     
+      
      const startApp = () => {
-       
        fetchAndDisplayMenu();
      };
       
